@@ -4,8 +4,10 @@ import math
 import requests
 import json
 import iso8601
-
 from googlemaps import directions as directions_client
+
+
+NCTX_BASE_URL = "https://api.nctx.co.uk/api/v1/"
 
 with open("../config/configuration.json") as json_data_file:
     configuration = json.load(json_data_file)
@@ -16,8 +18,6 @@ with open("../config/configuration.json") as json_data_file:
     BUS_STOP_CODE = options["busStopCode"]
     BUS_NUMBER = options["busNumber"]
     TRAVEL_MODE = options["travelModeToBus"]
-
-NCTX_BASE_URL = "https://api.nctx.co.uk/api/v1/"
 
 
 def get_walking_time(travel_from, travel_to, travel_mode):
@@ -43,6 +43,7 @@ def get_next_bus_time(bus_number, bus_stop_code, travel_time):
                 continue
             return departure_time
 
+    raise Exception("No bus found")
 
 
 def main():
@@ -55,7 +56,7 @@ def main():
 
     time_until_time_to_leave = time_to_leave - datetime.now()
 
-    print("You need to leave in " + str(time_until_time_to_leave))
+    print("You need to leave in " + str(math.floor(time_until_time_to_leave.seconds/60)) + " minutes.")
 
 
 if __name__ == "__main__":
