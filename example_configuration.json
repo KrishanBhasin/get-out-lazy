@@ -1,0 +1,12 @@
+{
+  "credentials": {
+    "googleMapsApiKey": "KEY_HERE"
+  },
+  "options": {
+    "homePostcode": "NG11AA",
+    "destinationPostcode": "NG1 7FE",
+    "busStopCode": "3390S1",
+    "busNumber": "11",
+    "travelModeToBus": "walking"
+  }
+}
