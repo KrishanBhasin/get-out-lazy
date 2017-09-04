@@ -31,20 +31,24 @@ def get_walking_time(travel_from, travel_to, travel_mode):
     return math.ceil(directions[0]["legs"][0]["distance"]["value"] / 60)
 
 
-def get_next_bus_time(bus_number, bus_stop_code):
+def get_next_bus_time(bus_number, bus_stop_code, travel_time):
     r = requests.get(NCTX_BASE_URL + "departures/" + bus_stop_code + "/realtime")
 
     bus_time_json = json.loads(r.content.decode("utf-8"))
 
     for entry in bus_time_json:
-        if entry["busService"] == bus_number:
-            return iso8601.parse_date(entry["time"]).replace(tzinfo=None)
+        if entry["busService"] == bus_number and entry["time"]:
+            departure_time = iso8601.parse_date(entry["time"]).replace(tzinfo=None)
+            if datetime.now() + timedelta(minutes=travel_time) > departure_time:
+                continue
+            return departure_time
+
 
 
 def main():
     walking_time_minutes = get_walking_time(HOME_POSTCODE, BUS_STOP_POSTCODE, TRAVEL_MODE)
     print("Time to bus stop: " + str(walking_time_minutes))
-    next_bus_time = get_next_bus_time(BUS_NUMBER, BUS_STOP_CODE)
+    next_bus_time = get_next_bus_time(BUS_NUMBER, BUS_STOP_CODE, walking_time_minutes)
     print("Next bus time is: " + str(next_bus_time))
     time_to_leave = next_bus_time - timedelta(minutes=walking_time_minutes)
     print("The time to leave is: " + str(time_to_leave))
